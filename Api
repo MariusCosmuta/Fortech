@@ -1,0 +1,122 @@
+import requests
+import _json
+import time
+
+response = requests.get("https://restcountries.eu/rest/v2/")
+list = []
+for l in response.json():
+    list.append(l)
+
+
+def first_selection():
+    '''
+    a list of some fancy cards of all the countries in alphabetical order, displaying the flag, name, capital,
+    region and population
+
+    '''
+    list_selection = []
+    for l in list:
+        selection = {
+            "name": l["name"],
+            "capital": l["capital"],
+            "region": l["region"],
+            "population": l["population"],
+        }
+        list_selection.append(selection)
+    return list_selection
+
+
+def second_selection(name='', capital='', code=''):
+    '''
+        a search form where you can type the name, code or capital of a country and display the filtered list (if there are no results show a short notice message)
+    '''
+    list_selection = []
+    for l in list:
+        if(l['name'] == name and l['name'] != ''):
+            list_selection.append(l)
+            continue
+        if (l['capital'] == name and l['capital'] != ''):
+            list_selection.append(l)
+            continue
+
+        code_found = False
+        for l1 in l['currencies']:
+            if(l1['code'] == code and l['code'] == ''):
+                code_found = True
+
+        if (code_found): list_selection.append()
+    return list_selection
+
+
+def third_selection():
+    '''
+        a filter section where you can select to filter the list by:
+            region (continent)
+            population range
+            languages
+            time zone
+            currencies
+    '''
+    list_selection = []
+    for l in list:
+        selection = {
+            "region": l["region"],
+            "population": l["population"],
+            "languages": l["languages"],
+            "timezones": l["timezones"],
+            "currencies": l["currencies"],
+        }
+        list_selection.append(selection)
+    return list_selection
+
+
+def fourth_selection():
+    '''
+    a section or modal or page (feel free to improvise) visible when clicking any of the country cards where we would like you to display the:
+        flag
+        name
+        alpha 2 code
+        capital
+        region (continent)
+        population
+        latlng
+        area
+        timezone
+        current time
+        the names of the neighbour countries (when clicked should display the selected neighbour details)
+        currencies
+        official languages
+    '''
+    list_selection = []
+
+    for l in list:
+        curr_time = time.localtime()
+        curr_clock = time.strftime("%H:%M:%S", curr_time)
+        curr_clock = curr_clock.split(':')
+        curr_clock[0] = int(curr_clock[0]) - 2
+        if(len(l['timezones'][0]) != 3):
+            if (l['timezones'][0][3] == '+'):
+                curr_clock[0] -= int(l['timezones'][0][4:5])
+            else:
+                curr_clock[0] += int(l['timezones'][0][4:5])
+        clock = str(curr_clock[0]) + ":" + curr_clock[1] + ":" + curr_clock[2]
+
+        selection = {
+            "flag": l["flag"],
+            "name": l["name"],
+            "alpha2Code": l["alpha2Code"],
+            "capital": l["capital"],
+            "region": l["region"],
+            "population": l["population"],
+            "latlng": l["latlng"],
+            "area": l["area"],
+            "timezones": l["timezones"],
+            "current_time": clock,
+            "borders": [item for item in list if item['alpha3Code'] in l['borders']],
+            "currencies": l["currencies"],
+            "languages": l["languages"],
+        }
+        list_selection.append(selection)
+    return list_selection
+
+
